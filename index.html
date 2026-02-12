@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valentine Debug Mode</title>
-<script src="https://cdn.jsdelivr.net/npm/webgazer/dist/webgazer.min.js"></script>
+    <title>For My Valentine</title>
+    <script src="https://cdn.jsdelivr.net/npm/webgazer/dist/webgazer.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
 
@@ -26,23 +26,7 @@
             overscroll-behavior-y: none;
         }
 
-        /* --- DEBUG CONSOLE (NEW) --- */
-        #debugConsole {
-            position: fixed; top: 0; left: 0;
-            background: rgba(0,0,0,0.8); color: lime;
-            padding: 10px; font-family: monospace; font-size: 12px;
-            text-align: left; z-index: 9999;
-            max-width: 300px; pointer-events: none;
-        }
-        
-        /* --- BLUE TRACKING DOT (NEW) --- */
-        #gazeDot {
-            position: fixed; width: 20px; height: 20px;
-            background: blue; border-radius: 50%;
-            pointer-events: none; z-index: 9998;
-            transform: translate(-50%, -50%);
-            display: none; border: 2px solid white;
-        }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; color: var(--primary); }
 
         /* --- CALIBRATION OVERLAY --- */
         .calibration-overlay {
@@ -167,9 +151,6 @@
 </head>
 <body>
 
-    <div id="debugConsole">System Check...</div>
-    <div id="gazeDot"></div>
-
     <div class="calibration-overlay" id="calibrationOverlay">
         <h2 style="color:var(--primary);">Configuring Love Sensors...</h2>
         <p class="calib-instruction" id="calibText">Please LOOK AT the heart as you click it!</p>
@@ -228,14 +209,6 @@
     </div>
 
     <script>
-        const debugConsole = document.getElementById('debugConsole');
-        const gazeDot = document.getElementById('gazeDot');
-
-        function log(msg) {
-            debugConsole.innerText = msg;
-            console.log(msg);
-        }
-
         const bookContent = [
             {
                 left: `<h2>Chapter 1: Us</h2><p class="letter-text">Dear Kali Hillary,<br><br>My love Kali, you are my greatest happiness. You being in my life brings so much joy, it feels like Christmas everyday I am with you.<br><br>We started talking when we were just children and from that day, January 8th, I knew you were the person I wanted to marry. I feel invincible with you in my life, I feel like I can accomplish all of my dreams with you by my side my love.<br><br>I remember the first time we bet on the benches outside the movies, I couldn't believe it was you, it felt so surreal because a few months earlier we had turnt strangers and I had told my self that nothing would stop me from getting you back.</p><div class="page-number">- 1 -</div>`,
@@ -261,8 +234,6 @@
         const calibBtn = document.getElementById('calibBtn');
         
         window.onload = async function() {
-            log("Initializing WebGazer...");
-            
             // Show Skip button after 5 seconds if camera fails
             setTimeout(() => {
                 document.getElementById('skipBtn').style.display = 'block';
@@ -271,17 +242,7 @@
             try {
                 await webgazer.setRegression('ridge') 
                     .setGazeListener(function(data, clock) { 
-                        if (data == null) {
-                            log("WebGazer running, no eyes detected");
-                            return;
-                        }
-                        // Update Blue Debug Dot
-                        gazeDot.style.display = 'block';
-                        gazeDot.style.left = data.x + 'px';
-                        gazeDot.style.top = data.y + 'px';
-                        
-                        log(`Eyes at: ${Math.round(data.x)}, ${Math.round(data.y)}`);
-                        
+                        if (data == null) return;
                         // If calibration is done, check gaze
                         if(document.getElementById('calibrationOverlay').style.display === 'none') {
                             checkGaze(data.x, data.y);
@@ -290,11 +251,9 @@
                 
                 webgazer.showVideo(false);
                 webgazer.showFaceOverlay(false);
-                webgazer.showPredictionPoints(false); // We use our blue dot instead
-                log("WebGazer Started. Please Calibrate.");
-
+                webgazer.showPredictionPoints(false); 
             } catch (err) {
-                log("Error: " + err.message);
+                console.log("Error: " + err.message);
                 alert("Camera access denied or error. You can use the 'Skip' button.");
             }
         };
@@ -318,7 +277,6 @@
             document.getElementById('kindleSection').style.display = 'block';
             document.getElementById('heroSection').style.display = 'flex';
             renderPage(0);
-            log("Calibration Done. App Active.");
         }
 
         function renderPage(index) {
