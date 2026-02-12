@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Valentine</title>
+    <script src="https://webgazer.cs.brown.edu/webgazer.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+        :root {
+            /* Romance Colors */
+            --primary: #d32f2f;
+            --bg-pink: #fff0f3;
+            
+            /* Kindle Colors */
+            --kindle-bezel: #333333;
+            --kindle-screen-bg: #f4f1ea; 
+            --kindle-text: #1a1a1a;
+            --kindle-font: 'Merriweather', serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--kindle-font);
+            background-color: var(--bg-pink);
+            color: var(--kindle-text);
+            overflow-x: hidden;
+            text-align: center;
+            overscroll-behavior-y: none;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary);
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            min-height: 90vh;
+            padding: 50px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .status-text {
+            font-size: 1.5rem;
+            height: 30px;
+            color: var(--primary);
+            font-style: italic;
+            margin-bottom: 20px;
+            font-weight: bold;
+            transition: opacity 0.3s;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 50px;
+            margin-top: 20px;
+            position: relative;
+            height: 100px; 
+            width: 100%;
+            justify-content: center;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 1.3rem;
+            border: none;
+            cursor: pointer;
+            border-radius: 50px;
+            font-family: 'Playfair Display', serif;
+            transition: transform 0.2s;
+            position: relative;
+            z-index: 10;
+        }
+
+        .yes-btn {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(211, 47, 47, 0.4);
+        }
+
+        .no-btn {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        /* --- KINDLE DEVICE & ALBUM SECTION --- */
+        .kindle-section {
+            padding: 60px 20px;
+            background: #e8e0e3;
+            user-select: none; 
+            -webkit-user-select: none;
+        }
+
+        .kindle-device {
+            background-color: var(--kindle-bezel);
+            border-radius: 20px;
+            padding: 25px 25px 40px 25px;
+            box-shadow: 
+                0 15px 35px rgba(0,0,0,0.3),
+                inset 0 -2px 5px rgba(0,0,0,0.5);
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .kindle-device::after {
+            content: 'kindle';
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #666;
+            font-family: sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .kindle-screen {
+            background-color: var(--kindle-screen-bg);
+            box-shadow: inset 1px 1px 10px rgba(0,0,0,0.15);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer; 
+            min-height: 500px; 
+            transition: opacity 0.2s ease;
+        }
+
+        .page-refreshing {
+            opacity: 0.4;
+            filter: blur(1px);
+        }
+
+        .book-layout {
+            display: flex;
+            flex-wrap: wrap;
+            position: relative;
+            height: 100%;
+        }
+
+        .book-spine-shadow {
+            position: absolute;
+            top: -30px; bottom: -30px;
+            left: 50%;
+            width: 60px;
+            transform: translateX(-50%);
+            background: linear-gradient(to right, 
+                transparent 0%, 
+                rgba(0,0,0,0.08) 45%, 
+                rgba(0,0,0,0.12) 50%, 
+                rgba(0,0,0,0.08) 55%, 
+                transparent 100%);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .book-page {
+            flex: 1 1 40%;
+            padding: 20px;
+            text-align: left;
+            min-width: 300px;
+        }
+
+        .book-page h2 {
+            color: var(--kindle-text);
+            font-size: 1.8rem;
+            margin-top: 0;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 15px;
+        }
+
+        .letter-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--kindle-text);
+        }
+
+        .photo-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .kindle-photo {
+            background: white;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transform: rotate(-2deg);
+            transition: transform 0.3s;
+        }
+        
+        .kindle-photo:nth-child(even) {
+             transform: rotate(2deg);
+        }
+        
+        .kindle-photo:hover {
+            transform: rotate(0deg) scale(1.02);
+            z-index: 10;
+        }
+
+        .kindle-photo img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .page-number {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #888;
+            margin-top: 30px;
+        }
+
+        .click-hint {
+            position: absolute;
+            bottom: 5px;
+            right: 15px;
+            font-size: 0.7rem;
+            color: #aaa;
+            font-style: italic;
+        }
+
+        /* --- DENTAL GAME MODAL --- */
+        .game-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255, 240, 243, 0.98);
+            z-index: 2000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><text y="20" font-size="20">🪥</text></svg>'), auto; 
+        }
+
+        .tooth-container {
+            position: relative;
+            width: 300px;
+            height: 350px;
+            margin-bottom: 20px;
+        }
+
+        /* The clean tooth uses the MOLAR SVG Mask. 
+           This masks the white background to the shape of the molar.
+        */
+        .clean-tooth {
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            mask-image: url('data:image/svg+xml;utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="m471,71.7c-20.2-32.6-49.1-53-83.6-58.9-27.9-4.8-57.2,0.1-87,14.6-27.8,13.5-61,13.5-88.9,0-29.8-14.4-59.1-19.3-87-14.6-34.4,5.9-63.3,26.2-83.5,58.9-34.7,56-39.6,141.7-13.2,229.1 24.8,82.1 74.5,154.8 133,194.3 10.5,7.1 23.9,7.8 35.1,1.9 10.8-5.7 17.5-16.8 17.5-29.1 0-107.9 30.2-166.2 42.6-166.2 12.4,0 42.6,58.2 42.6,166.4 0,12.1 6.6,23.2 17.5,28.9 15,7.7 28.3,2.7 35.1-1.9 58.6-39.4 108.2-112.2 133-194.3 26.4-87.4 21.5-173.1-13.2-229.1v1.42109e-14z"/></svg>');
+            -webkit-mask-image: url('data:image/svg+xml;utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="m471,71.7c-20.2-32.6-49.1-53-83.6-58.9-27.9-4.8-57.2,0.1-87,14.6-27.8,13.5-61,13.5-88.9,0-29.8-14.4-59.1-19.3-87-14.6-34.4,5.9-63.3,26.2-83.5,58.9-34.7,56-39.6,141.7-13.2,229.1 24.8,82.1 74.5,154.8 133,194.3 10.5,7.1 23.9,7.8 35.1,1.9 10.8-5.7 17.5-16.8 17.5-29.1 0-107.9 30.2-166.2 42.6-166.2 12.4,0 42.6,58.2 42.6,166.4 0,12.1 6.6,23.2 17.5,28.9 15,7.7 28.3,2.7 35.1-1.9 58.6-39.4 108.2-112.2 133-194.3 26.4-87.4 21.5-173.1-13.2-229.1v1.42109e-14z"/></svg>');
+            mask-size: contain;
+            -webkit-mask-size: contain;
+            mask-repeat: no-repeat;
+            -webkit-mask-repeat: no-repeat;
+            mask-position: center;
+            -webkit-mask-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        /* The Plaque Canvas ALSO uses the Molar mask.
+           This ensures the dirty yellow drawing stays inside the tooth lines.
+        */
+        #plaqueCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            mask-image: url('data:image/svg+xml;utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="m471,71.7c-20.2-32.6-49.1-53-83.6-58.9-27.9-4.8-57.2,0.1-87,14.6-27.8,13.5-61,13.5-88.9,0-29.8-14.4-59.1-19.3-87-14.6-34.4,5.9-63.3,26.2-83.5,58.9-34.7,56-39.6,141.7-13.2,229.1 24.8,82.1 74.5,154.8 133,194.3 10.5,7.1 23.9,7.8 35.1,1.9 10.8-5.7 17.5-16.8 17.5-29.1 0-107.9 30.2-166.2 42.6-166.2 12.4,0 42.6,58.2 42.6,166.4 0,12.1 6.6,23.2 17.5,28.9 15,7.7 28.3,2.7 35.1-1.9 58.6-39.4 108.2-112.2 133-194.3 26.4-87.4 21.5-173.1-13.2-229.1v1.42109e-14z"/></svg>');
+            -webkit-mask-image: url('data:image/svg+xml;utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="m471,71.7c-20.2-32.6-49.1-53-83.6-58.9-27.9-4.8-57.2,0.1-87,14.6-27.8,13.5-61,13.5-88.9,0-29.8-14.4-59.1-19.3-87-14.6-34.4,5.9-63.3,26.2-83.5,58.9-34.7,56-39.6,141.7-13.2,229.1 24.8,82.1 74.5,154.8 133,194.3 10.5,7.1 23.9,7.8 35.1,1.9 10.8-5.7 17.5-16.8 17.5-29.1 0-107.9 30.2-166.2 42.6-166.2 12.4,0 42.6,58.2 42.6,166.4 0,12.1 6.6,23.2 17.5,28.9 15,7.7 28.3,2.7 35.1-1.9 58.6-39.4 108.2-112.2 133-194.3 26.4-87.4 21.5-173.1-13.2-229.1v1.42109e-14z"/></svg>');
+            mask-size: contain;
+            -webkit-mask-size: contain;
+            mask-repeat: no-repeat;
+            -webkit-mask-repeat: no-repeat;
+            mask-position: center;
+            -webkit-mask-position: center;
+            touch-action: none;
+        }
+
+        .clean-msg {
+            color: #d32f2f;
+            font-size: 2rem;
+            font-family: 'Playfair Display', serif;
+            opacity: 0;
+            transition: opacity 0.5s;
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .progress-container {
+            width: 300px;
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: #4caf50;
+            transition: width 0.1s;
+        }
+
+        /* --- INVITE MODAL --- */
+        .invite-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(51, 51, 51, 0.95);
+            z-index: 3000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .ticket {
+            background: var(--kindle-screen-bg);
+            color: var(--kindle-text);
+            border: 1px solid #ccc;
+            padding: 40px;
+            max-width: 500px;
+            border-radius: 5px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        .calendar-btn {
+            margin-top: 20px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="kindle-section">
+        <div class="kindle-device">
+            <div class="kindle-screen" id="kindleScreen">
+                <div class="book-layout">
+                    
+                    <div class="book-spine-shadow"></div>
+                    <div class="book-page left-page" id="pageLeft"></div>
+                    <div class="book-page right-page" id="pageRight"></div>
+                    <div class="click-hint">Tap sides or swipe to turn</div>
+                </div> 
+            </div> 
+        </div> 
+    </div>
+
+    <div class="hero">
+        <h1 style="font-size: 3.5rem; margin-bottom: 10px;">So, with all of that said Kali...</h1>
+        <h2 style="font-size: 2rem; margin-bottom: 30px;">Will you be my Valentine?</h2>
+        
+        <div class="status-text" id="statusText"></div>
+
+        <div class="btn-container">
+            <button class="yes-btn" id="yesBtn" onclick="initGame()">YES! Absolutely!</button>
+            <button class="no-btn" id="noBtn">No</button>
+        </div>
+    </div>
+
+    <div class="game-modal" id="gameModal">
+        <h2 style="color:var(--primary); margin-bottom: 10px;">Wait! This anterior molar needs a cleaning first!</h2>
+        <p style="margin-bottom: 20px;">Use your finger/mouse to scrub away the plaque.</p>
+        
+        <div class="tooth-container">
+            <div class="clean-tooth">
+                <div class="clean-msg" id="cleanMsg">Sparkling! ✨</div>
+            </div>
+            <canvas id="plaqueCanvas"></canvas>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <p id="gameStatus" style="font-size: 0.9rem; margin-top:5px; color:#666;">Cleaning: 0%</p>
+    </div>
+
+
+    <div class="invite-modal" id="inviteModal">
+        <div class="ticket">
+            <h1 style="color: var(--primary)">It's a Date! ❤️</h1>
+            <p>Excellent dental work, Dr. Hillary!</p>
+            <hr style="border: 0; border-top: 1px solid #ccc; margin: 20px 0;">
+            <h3>Valentine's Dinner</h3>
+            <p><strong>When:</strong> Feb 14th, 2026 @ 7:00 PM</p>
+            <p><strong>Where:</strong> A Surprise Location</p>
+            
+            <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Valentine's+Dinner+with+Shavar&dates=20260214T190000/20260214T220000&details=Dinner+reservation+made+by+Shavar+for+Kali!&location=Surprise+Location" 
+               target="_blank" 
+               class="calendar-btn">
+               Accept & Add to Calendar
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const statusText = document.getElementById('statusText');
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+
+        // --- BOOK CONTENT DATA ---
+        const bookContent = [
+            {
+                left: `
+                    <h2>Chapter 1: Us</h2>
+                    <p class="letter-text">
+                        Dear Kali Hillary,
+                        <br><br>
+                        My love Kali, you are my greatest happiness. You being in my life brings so much joy, it feels like Christmas everyday I am with you.
+                        <br><br>
+                        We started talking when we were just children and from that day, January 8th, I knew you were the person I wanted to marry. I feel invincible with you in my life, I feel like I can accomplish all of my dreams with you by my side my love.
+                        <br><br>
+                        I remember the first time we bet on the benches outside the movies, I couldn't believe it was you, it felt so surreal because a few months earlier we had turnt strangers and I had told my self that nothing would stop me from getiing you back and just being in that moment, it felt so right.
+                    </p>
+                    <div class="page-number">- 1 -</div>
+                `,
+                right: `
+                    <p class="letter-text">
+                        I know how much you your kindle so I decided to build this like a kindle beacause though I don't like to read you do and if I got amnesia or lost my brain, the few words I can guarantee I would know are I love Kali.
+                        <br><br>
+                        Your Lover,<br>Shavar
+                    </p>
+                     <div class="photo-stack">
+                        <div class="kindle-photo" style="transform: rotate(2deg);">
+                            <img src="IMG_0931.jpg" alt="Us">
+                        </div>
+                         <div class="kindle-photo" style="transform: rotate(2deg);">
+                            <img src="IMG_1846.JPG" alt="Us">
+                        </div>
+                    </div>
+                     <div class="page-number">- 2 -</div>
+                `
+            },
+            {
+                left: `
+                    <h2>Chapter 2: The Future</h2>
+                    <p class="letter-text">
+                       Our book is still being written and this valentines day I hope that it will be a winderful paragraph.
+                        <br><br>
+                       I always tell you that our future basket will go bad together because nothing in life will get me to stop loving you. I would drain the ocean so you have dry land to walk on, stop the wind to keep you warm, I feel jealous of the rain that falls on your skin because only I should feel so close to you.
+                    </p>
+                    <div class="page-number">- 3 -</div>
+                `,
+                right: `
+                    <div class="photo-stack" style="transform: rotate(1deg);">
+                         <div class="kindle-photo">
+                            <img src="IMG_9118.PNG" alt="Future">
+                        </div>
+                        <p class="letter-text" style="margin-top:20px; text-align:center;">
+                            <i>"You are my favorite person to debug life with."</i>
+                        </p>
+                    </div>
+                     <div class="page-number">- 4 -</div>
+                `
+            }
+        ];
+
+        let currentPageIndex = 0;
+        const kindleScreen = document.getElementById('kindleScreen');
+        const pageLeft = document.getElementById('pageLeft');
+        const pageRight = document.getElementById('pageRight');
+
+        // Render Initial Page
+        renderPage(0);
+
+        function renderPage(index) {
+            if(index < 0) index = 0;
+            if(index >= bookContent.length) index = bookContent.length - 1;
+            
+            currentPageIndex = index;
+
+            kindleScreen.classList.add('page-refreshing');
+            
+            setTimeout(() => {
+                pageLeft.innerHTML = bookContent[index].left;
+                pageRight.innerHTML = bookContent[index].right;
+                kindleScreen.classList.remove('page-refreshing');
+            }, 200); 
+        }
+
+        // --- INTERACTION LOGIC ---
+        kindleScreen.addEventListener('click', function(e) {
+            const rect = kindleScreen.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const width = rect.width;
+            if (x > width / 2) {
+                if (currentPageIndex < bookContent.length - 1) renderPage(currentPageIndex + 1);
+            } else {
+                if (currentPageIndex > 0) renderPage(currentPageIndex - 1);
+            }
+        });
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+        kindleScreen.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
+
+        kindleScreen.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchStartX - touchEndX > 50) {
+                if (currentPageIndex < bookContent.length - 1) renderPage(currentPageIndex + 1);
+            }
+            if (touchEndX - touchStartX > 50) {
+                if (currentPageIndex > 0) renderPage(currentPageIndex - 1);
+            }
+        }, {passive: true});
+
+
+        // --- DENTAL GAME LOGIC ---
+        let canvas, ctx, isDrawing = false;
+        let totalPixels = 0;
+
+        function initGame() {
+            // Stop eye tracking
+            webgazer.pause();
+            
+            const gameModal = document.getElementById('gameModal');
+            gameModal.style.display = 'flex';
+            
+            canvas = document.getElementById('plaqueCanvas');
+            ctx = canvas.getContext('2d', { willReadFrequently: true });
+            
+            // Set canvas size to match container
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            // Fill with "Plaque" (Yellowish dirty color)
+            ctx.fillStyle = "#f5e6a2"; // Dirty yellow
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add some "stains" for texture
+            ctx.fillStyle = "#e0c080";
+            for(let i=0; i<20; i++) {
+                ctx.beginPath();
+                ctx.arc(Math.random()*canvas.width, Math.random()*canvas.height, Math.random()*30 + 10, 0, Math.PI*2);
+                ctx.fill();
+            }
+
+            // Prepare for erasing
+            ctx.globalCompositeOperation = 'destination-out';
+            
+            // Calculate total pixels for percentage (approximate)
+            totalPixels = canvas.width * canvas.height;
+
+            // Events
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', endDraw);
+            
+            canvas.addEventListener('touchstart', startDraw);
+            canvas.addEventListener('touchmove', draw);
+            canvas.addEventListener('touchend', endDraw);
+        }
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            let clientX, clientY;
+            
+            if(e.touches) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function startDraw(e) {
+            isDrawing = true;
+            draw(e);
+        }
+
+        function endDraw() {
+            isDrawing = false;
+            checkWinCondition();
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault(); 
+            
+            const pos = getPos(e);
+            
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, 25, 0, Math.PI * 2); // Brush size
+            ctx.fill();
+        }
+
+        function checkWinCondition() {
+            // Check pixel data to see how much transparency exists
+            // We check a grid of points to save performance vs checking every pixel
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            let transparentCount = 0;
+            const step = 10; // Check every 10th pixel
+            let totalChecked = 0;
+
+            for (let i = 0; i < data.length; i += 4 * step) {
+                // Alpha channel is the 4th value (index 3, 7, 11...)
+                if (data[i + 3] === 0) {
+                    transparentCount++;
+                }
+                totalChecked++;
+            }
+
+            const percentage = Math.floor((transparentCount / totalChecked) * 100);
+            
+            // Update UI
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('gameStatus').innerText = `Cleaning: ${percentage}%`;
+
+            // WIN CONDITION
+            if (percentage > 85) {
+                canvas.style.pointerEvents = 'none'; // Stop drawing
+                document.getElementById('cleanMsg').style.opacity = 1;
+                document.getElementById('gameStatus').innerText = "CLEAN!";
+                document.getElementById('gameStatus').style.color = "green";
+                document.getElementById('gameStatus').style.fontWeight = "bold";
+
+                // Wait 1.5 seconds then show invite
+                setTimeout(showFinalInvite, 1500);
+            }
+        }
+
+        function showFinalInvite() {
+            document.getElementById('gameModal').style.display = 'none';
+            document.getElementById('inviteModal').style.display = 'flex';
+        }
+
+
+        // --- WEBGAZER & BUTTON LOGIC ---
+        window.onload = async function() {
+            await webgazer.setRegression('ridge') 
+                .setGazeListener(function(data, clock) {
+                    if (data == null) return;
+                    checkGaze(data.x, data.y);
+                }).begin();
+
+            var videoContainer = document.getElementById('webgazerVideoContainer');
+            if(videoContainer) videoContainer.style.display = 'none'; 
+            var webcamVideo = document.getElementById('webgazerVideoFeed');
+            if(webcamVideo) {
+                 webcamVideo.style.position = 'fixed';
+                 webcamVideo.style.top = '-9999px';
+            }
+        };
+
+        function checkGaze(x, y) {
+            const yesRect = yesBtn.getBoundingClientRect();
+            const noRect = noBtn.getBoundingClientRect();
+            const buffer = 50; 
+
+            if (x >= noRect.left - buffer && x <= noRect.right + buffer &&
+                y >= noRect.top - buffer && y <= noRect.bottom + buffer) {
+                statusText.innerText = "Why are you thinking of no? 🤨";
+                moveNoButton(); 
+            }
+            else if (x >= yesRect.left - buffer && x <= yesRect.right + buffer &&
+                     y >= yesRect.top - buffer && y <= yesRect.bottom + buffer) {
+                statusText.innerText = "That's more like it! 🥰";
+            } 
+            else {
+                statusText.innerText = "";
+            }
+        }
+
+        function moveNoButton() {
+            const maxX = window.innerWidth - noBtn.offsetWidth - 20;
+            const maxY = window.innerHeight - noBtn.offsetHeight - 20;
+            
+            const newX = Math.max(20, Math.random() * maxX);
+            const newY = Math.max(20, Math.random() * maxY);
+            
+            noBtn.style.position = 'fixed'; 
+            noBtn.style.left = `${newX}px`;
+            noBtn.style.top = `${newY}px`;
+            noBtn.style.zIndex = '100'; 
+        }
+
+        noBtn.addEventListener('mouseover', function() {
+            statusText.innerText = "Why are you thinking of no? 🤨";
+            moveNoButton();
+        });
+        noBtn.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            moveNoButton();
+        });
+    </script>
+</body>
+</html>
